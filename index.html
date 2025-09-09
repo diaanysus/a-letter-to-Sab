@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>A Letter to Sabien</title>
+<link href="https://fonts.googleapis.com/css2?family=IM+Fell+DW+Pica:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'IM Fell DW Pica', serif;
+    line-height: 1.6;
+    overflow-x: hidden;
+    transition: background-color 0.8s ease;
+}
+
+/* Sections */
+.section {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem;
+    position: relative;
+}
+
+/* Landing Section */
+.landing {
+    background-color: #8B0000;
+    color: #FFF8F0;
+    text-align: center;
+}
+
+.landing h1 {
+    font-size: clamp(3rem, 8vw, 6rem);
+    margin-bottom: 2rem;
+    font-weight: 400;
+    letter-spacing: 2px;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+}
+
+.scroll-prompt {
+    font-size: 1.2rem;
+    opacity: 0.8;
+    animation: pulse 2s infinite;
+    margin-top: 3rem;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 0.8; }
+    50% { opacity: 0.4; }
+}
+
+/* Letter Section (Interactive) */
+.interactive-section {
+    opacity: 0;
+    transform: translateY(50px);
+    transition: all 1s ease;
+}
+
+.interactive-section.active {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.letter-section {
+    background-color: #FFF8F0;
+    color: #8B0000;
+    text-align: center;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.letter-section h2 {
+    font-size: clamp(2rem, 5vw, 3rem);
+    margin-bottom: 2rem;
+    font-weight: 400;
+}
+
+.letter-intro {
+    font-size: clamp(1.1rem, 2.5vw, 1.4rem);
+    line-height: 1.8;
+    margin-bottom: 3rem;
+    text-align: left;
+    max-width: 600px;
+}
+
+.letter-intro p:first-child {
+    margin-top: 2rem;
+}
+
+.read-letter-btn {
+    background-color: #8B0000;
+    color: #FFF8F0;
+    border: none;
+    padding: 1rem 2rem;
+    font-size: 1.2rem;
+    font-family: 'IM Fell DW Pica', serif;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(139, 0, 0, 0.3);
+    margin-bottom: 3rem;
+}
+
+.read-letter-btn:hover {
+    background-color: #A52A2A;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(139, 0, 0, 0.4);
+}
+
+/* Audio Player */
+.audio-player {
+    background-color: rgba(139, 0, 0, 0.1);
+    padding: 1.5rem 3rem;
+    border-radius: 12px;
+    margin-top: 2rem;
+    border: 2px solid #8B0000;
+}
+
+.audio-player h3 {
+    margin-bottom: 1rem;
+    color: #8B0000;
+}
+
+audio {
+    width: 100%;
+    max-width: 400px;
+}
+
+/* Overlay */
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.9);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    backdrop-filter: blur(5px);
+}
+
+.overlay.show {
+    display: flex;
+    animation: fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.overlay-content {
+    background-color: #FFF8F0;
+    color: #8B0000;
+    padding: 3rem;
+    border-radius: 15px;
+    max-width: 90%;
+    max-height: 90%;
+    overflow-y: auto;
+    position: relative;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+    transform: perspective(1000px) rotateX(0deg);
+    animation: slideIn 0.6s ease;
+}
+
+@keyframes slideIn {
+    from { transform: perspective(1000px) rotateX(-15deg) translateY(-50px); opacity: 0; }
+    to { transform: perspective(1000px) rotateX(0deg) translateY(0); opacity: 1; }
+}
+
+.close-btn {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: #8B0000;
+    color: #FFF8F0;
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+.close-btn:hover {
+    background: #A52A2A;
+    transform: rotate(90deg);
+}
+
+.full-letter {
+    font-size: clamp(1rem, 2vw, 1.2rem);
+    line-height: 1.8;
+    text-align: left;
+}
+
+.full-letter h2 {
+    text-align: center;
+    margin-bottom: 2rem;
+    font-size: clamp(1.5rem, 4vw, 2.5rem);
+}
+
+.full-letter p {
+    margin-bottom: 1.5rem;
+}
+
+/* Floating petals & ribbons */
+.petal {
+    position: absolute;
+    width: 15px;
+    height: 15px;
+    background: rgba(255,200,200,0.7);
+    border-radius: 50%;
+    pointer-events: none;
+    animation: floatPetal 5s linear infinite;
+}
+
+@keyframes floatPetal {
+    0% { transform: translateY(0) rotate(0deg); }
+    100% { transform: translateY(-100px) rotate(360deg); }
+}
+
+.floating-ribbon {
+    position: absolute;
+    background-color: rgba(139,0,0,0.1);
+    color: #8B0000;
+    padding: 0.3rem 0.7rem;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    font-family: 'IM Fell DW Pica', serif;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    animation: floatRibbon 4s ease-in-out infinite alternate;
+}
+
+@keyframes floatRibbon {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(-15px); }
+}
+
+/* Responsive */
+@media (max-width:768px) {
+    .section { padding: 1rem; }
+    .overlay-content { padding: 2rem; margin: 1rem; }
+    .letter-intro { text-align: center; }
+}
+
+html { scroll-behavior: smooth; }
+</style>
+</head>
+<body>
+
+<!-- Landing Section -->
+<section class="section landing" id="landing">
+    <h1>A letter to Sabien</h1>
+    <div class="scroll-prompt">Scroll down ↓</div>
+</section>
+
+<!-- Interactive Section -->
+<section class="section interactive-section letter-section" id="letter">
+    <div class="letter-intro">
+        <p> Happy birthday, Sab!! </p>
+        <p>Sorry for using your birthday as my excuse to finally reply to your message. I really didn't know what to say with all the guilt and shame I've been carrying. I don't want to dwell much into that, but I do owe you a sincere apology, so… here goes nothing :)</p>
+    </div>
+    
+    <button class="read-letter-btn" onclick="openOverlay()">Read Full Letter</button>
+    
+    <div class="audio-player">
+        <h3>Taylor always reminds me of you. You can play this while reading !!</h3>
+        <audio controls>
+            <source src="audio/champagne-problems.mp3" type="audio/mpeg">
+            Your browser does not support the audio element.
+        </audio>
+    </div>
+</section>
+
+<!-- Overlay -->
+<div class="overlay" id="overlay" onclick="closeOverlay(event)">
+    <div class="overlay-content" onclick="event.stopPropagation()">
+        <button class="close-btn" onclick="closeOverlay()">&times;</button>
+        <div class="full-letter">
+            <h2>Dear Sab,</h2>
+            <p>I'm sorry for the times I could've been a better friend, but let my pride take over. And I'm even more sorry for the times I should've stood beside you, but ended up sitting with the very people who were rooting for your downfall. I used to talk shit about you...</p>
+            <p>I thought that if I found people who felt the same way, it would somehow make me better than you. But it never did. There were so many days I'd end up crying just from comparing myself to you, convincing myself to just focus on my own grass instead of looking at yours, but I'd always end up stuck in that cycle of envy and insecurity. And it let it affect how I treated you, and I'm really sorry for that.</p>
+            <p>But even after all that, one thing never changed — I have always looked up on you. You were strong in so many ways I could never be, and no matter how much I’ve always compared myself to you, deep down I knew it was because I just wanted to be you.</p>
+            <p>What I was too blind to to see was that behind your strong facade was also just a vulnerable girl carrying so much. When you admitted that there was a point where you even wanted to transfer schools mid-year, that’s when I realized how dumb I’d been. You went through so much more than I ever imagined, and yet you still stood your ground. That’s something I’ll always admire about you.</p>
+            <p>If I really am a collection of the people I’ve met, then you’re a huge part of me. You made me push myself without even knowing it — in quizzes, recitations, performance tasks, and all those silent competitions we had. Yeah, I hated those moments back then, but honestly? That’s exactly why I grew. You forced me to think harder, try harder, and see myself in ways I wouldn’t have on my own. I will always be grateful that we’ve crossed paths.</p>
+            <p>If there comes a time when you doubt yourself or feel like you’re not enough, I hope this letter reminds you of how amazing you are and how much you inspire the people around you.</p>
+            <p>Hope this day treats you great and is full of the good things you deserve:)</p>
+            <p style="margin-top: 2rem; text-align: center; font-style: italic;">Sincerely,<br>Dyna</p>
+        </div>
+    </div>
+</div>
+
+<script>
+// Overlay functions
+function openOverlay() {
+    document.getElementById('overlay').classList.add('show');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeOverlay(event) {
+    if (!event || event.target === document.getElementById('overlay')) {
+        document.getElementById('overlay').classList.remove('show');
+        document.body.style.overflow = 'auto';
+    }
+}
+
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeOverlay();
+});
+
+// Smooth background color transition
+window.addEventListener('scroll', () => {
+    const scrolled = window.pageYOffset;
+    const windowHeight = window.innerHeight;
+    const scrollProgress = Math.min(scrolled / windowHeight, 1);
+    const red = Math.round(139 + (255 - 139) * scrollProgress);
+    const green = Math.round(0 + (248 - 0) * scrollProgress);
+    const blue = Math.round(0 + (240 - 0) * scrollProgress);
+    document.body.style.backgroundColor = `rgb(${red},${green},${blue})`;
+});
+
+// Smooth scroll for internal links
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function(e) {
+        e.preventDefault();
+        document.querySelector(this.getAttribute('href')).scrollIntoView({ behavior: 'smooth' });
+    });
+});
+
+// INTERACTIVE EFFECTS ONLY AFTER SCROLL
+const interactive = document.querySelector('.interactive-section');
+let effectsStarted = false;
+
+window.addEventListener('scroll', () => {
+    const triggerPoint = window.innerHeight / 2;
+    const top = interactive.getBoundingClientRect().top;
+
+    if (top < triggerPoint) {
+        interactive.classList.add('active');
+
+        if (!effectsStarted) {
+            startInteractiveEffects();
+            effectsStarted = true;
+        }
+    }
+});
+
+function startInteractiveEffects() {
+    // Petals around interactive section
+    for (let i = 0; i < 15; i++) {
+        const petal = document.createElement('div');
+        petal.classList.add('petal');
+        petal.style.left = interactive.offsetLeft + Math.random() * interactive.offsetWidth + 'px';
+        petal.style.top = interactive.offsetTop + Math.random() * interactive.offsetHeight + 'px';
+        petal.style.animationDuration = 3 + Math.random() * 5 + 's';
+        document.body.appendChild(petal);
+    }
+
+    // Ribbons around interactive section
+    const messages = [
+        "fearless in every storm",
+        "speak now and the world listens",
+        "your passion burns red",
+        "Lover warmth surrounds you",
+        "your story is Folklore in motion",
+        "you shine Evermore",
+        "you own your Midnights like no one else",
+        
+    ];
+
+    messages.forEach(msg => {
+        const ribbon = document.createElement('div');
+        ribbon.classList.add('floating-ribbon');
+        ribbon.textContent = msg;
+        ribbon.style.left = interactive.offsetLeft + Math.random() * interactive.offsetWidth + 'px';
+        ribbon.style.top = interactive.offsetTop + Math.random() * interactive.offsetHeight + 'px';
+        document.body.appendChild(ribbon);
+    });
+}
+</script>
+</body>
+</html>
